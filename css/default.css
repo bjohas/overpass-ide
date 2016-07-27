@@ -11,11 +11,11 @@ body {
   background-color: #FFFFFF;
   padding: 0;
   margin: 0;
-  height: auto!important;
+  height: auto;
   position:absolute;
-  top:51px !important;
-  bottom:0 !important;
-  left:0 !important;
+  top:51px;
+  bottom:0 ;
+  left:0 ;
   width:45%;
 }
 #dataviewer {
@@ -23,15 +23,31 @@ body {
   padding: 0;
   margin: 0;
   border-left:1px solid #ccc;
-  height: auto !important;
+  height: auto;
   position:absolute;
-  top:51px !important;
-  bottom:0 !important;
+  top:51px;
+  bottom:0;
   left:45%;
-  right:0 !important;
+  right:0;
 }
 
-#dataviewer > div {
+#editor.portrait {
+  height: 25%;
+  width: 100%;
+  bottom: auto;
+}
+#dataviewer.portrait {
+  width: 100%;
+  padding: 0;
+  top: 30%;
+  top: calc(51px + 25%);
+  left: 0;
+  border-left: none;
+  border-top: 1px solid #ccc;
+}
+
+/*
+#map {
   width:100%;
   height:100%;
   z-index:-1001;
@@ -39,13 +55,22 @@ body {
   top:0;
   background-color:white;
 }
+*/
 
 #map {
+  width:100%;
+  height:100%;
   background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAI0lEQVQIW2NkYGD4f+/ePSAFAYxAzn84D1lASUmJAaQSQwUAcxYRaXDVJ6QAAAAASUVORK5CYII=);
-  z-index:1001;
 }
 #data {
+  background-color:white;
+  width:100%;
+  height:100%;
+  position:absolute;
+  top:0;
+  z-index:-1001;
 }
+
 
 #dataviewer.fullscreen {
   position: absolute;
@@ -99,6 +124,7 @@ body {
 }
 .nav {
   padding:13px 10px;
+  white-space:nowrap;
 }
 #navs > *, a {
   color: #232323;
@@ -110,10 +136,21 @@ a:not(.disabled):not(.active):hover {
 a {
   font-weight: bold;
 }
+a.external::after {
+  content: " ";
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background-image: url("http://code.jquery.com/ui/1.10.3/themes/smoothness/images/ui-icons_222222_256x240.png");
+  background-position: -32px -80px;
+}
+a.external {
+  white-space: nowrap;
+}
 .buttons {
-  float: left;
-  display: block;
+  display: inline-block;
   margin-right: 10px;
+  word-spacing: 2px;
 }
 .tabs {
   display: block;
@@ -126,17 +163,17 @@ a {
   border-radius: 3px;
   height: 12px;
   line-height: 12px;
-  padding: 6px 10px;
   display: block;
   float: left;
   text-decoration: none;
+  padding: 6px 10px;
   margin: 0px 0px;
   background: #fff;
   background: rgba(255, 255, 255, 0.3);
+  background: #e8e8e8;
 }
 a.button:not(.disabled):not(.active):hover {
-  box-shadow: #fff 0px 0px 5px;
-  background: rgba(0, 0, 0, 0.05);
+  box-shadow: #fff 0px -1px 5px;
 }
 a.button:not(.disabled):not(.active):active /*, a.button:focus*/ {
   box-shadow: #C8C8C8 0px 0px 3px;
@@ -144,19 +181,20 @@ a.button:not(.disabled):not(.active):active /*, a.button:focus*/ {
   outline: 0;
   text-shadow: none;
 }
-.gap {
-  margin-right: 10px;
-}
 .group {
+  margin-right: 0px;
+  display: inline-block;
+}
+.group > .button {
   border-radius: 0;
   border-left: 0;
 }
-.left {
+.group > .button:first-child {
   border-left: 1px solid #ccc;
   border-top-left-radius: 3px;
   border-bottom-left-radius: 3px;
 }
-.right {
+.group > .button:last-child {
   border-right: 1px solid #ccc;
   border-top-right-radius: 3px;
   border-bottom-right-radius: 3px;
@@ -167,8 +205,11 @@ a.button:not(.disabled):not(.active):active /*, a.button:focus*/ {
   border-bottom-left-radius:0;
   border-bottom-right-radius:0;
 }
+.tabs a.button {
+  background: #ddd;
+}
 .tabs a.button.active {
-  background: rgba(255,255,255, 0.6);
+  background: #f2f2f2;
 }
 a.button {
   cursor: pointer;
@@ -200,7 +241,7 @@ a.button.disabled {
 .modal {
   display: none;
   position: fixed;
-  z-index: 1007;
+  z-index: 1037;
   top: 0;
   left: 0;
   bottom: 0;
@@ -213,11 +254,6 @@ body.loading .modal {
   display:block;
 }
 
-.leaflet-container .leaflet-control-buttons { 
-  margin-left: 13px;
-  margin-top: 12px;
-}
-
 .leaflet-control-buttons a:hover {
   background-color: #FFFFFF;
   color: #777777; 
@@ -225,14 +261,12 @@ body.loading .modal {
 .leaflet-control-buttons a {
   display: block;
   color: black;
-  height: 22px;
   text-align: center;
   text-decoration: none;
-  width: 22px;
 }
 .leaflet-control-buttons a span {
   display:inline-block;
-  vertical-align:bottom;
+  vertical-align:middle;
 }
 .leaflet-control-buttons-fitdata {
 }
@@ -241,19 +275,46 @@ body.loading .modal {
 .leaflet-control-buttons-bboxfilter {
 }
 .leaflet-control-buttons-myloc span {
-  margin-bottom:-1px;
   margin-left:-2px;
 }
 .leaflet-container .leaflet-control-search {
-  margin-top: 12px;
-  margin-left: 13px;
   opacity: 0.8;
+  margin-left:6px;
 }
+.leaflet-container .leaflet-control-zoom a,
+.leaflet-container .leaflet-control-buttons a {
+  opacity: 0.8;
+  width:22px;
+  height:22px;
+  line-height:22px;
+}
+.leaflet-container a:visited {
+  color: #4b2f89;
+}
+/* touch specific styles */
+.leaflet-touch .leaflet-control-layers,
+.leaflet-touch .leaflet-control-zoom,
+.leaflet-touch .leaflet-control-buttons {
+  border: 3px solid rgba(0, 0, 0, 0.298);
+  border-radius: 5px;
+}
+.leaflet-touch .leaflet-control-buttons {
+  box-shadow: none;
+}
+.leaflet-touch .leaflet-bar a:first-child,
+.leaflet-touch .leaflet-bar a:last-child {
+  border-radius: 3px;
+}
+
 .dialog {
   display:none;
 }
+.ui-autocomplete {
+  max-width:35em;
+}
 .ui-autocomplete a{
-  font-weight:normal;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 .ui-combobox-toggle {
   position: absolute;
@@ -279,7 +340,8 @@ body.loading .modal {
   display: inline-block;
   font-size:1.8em;
   color: #7A7A7A;
-  padding-left: 10px;
+  padding-right: 10px;
+  vertical-align: top;
 }
 #navs .title a {
   text-decoration: none;
@@ -321,12 +383,21 @@ ul.plain > li {
 .leaflet-popup-content-wrapper {
   border-radius: 3px;
 }
+.leaflet-popup-content {
+  word-wrap: break-word;
+}
 .ui-widget textarea {
   font-family:monospace;
 }
 
 .ui-front {
   z-index:1011;
+}
+.ui-autocomplete.ui-front {
+  z-index:1012;
+}
+.ui-front.huge_data {
+  z-index:1040;
 }
 body .ui-tooltip {
   opacity:0.8;
@@ -337,6 +408,67 @@ body .ui-tooltip {
 #load-dialog .delete-query {
   position: absolute;
   right: 24px;
+}
+
+
+.warning {
+  color: orange;
+}
+
+.warning.severe {
+  color: red;
+}
+
+/*free form search/query builder*/
+#ffs-dialog input[type="text"] {
+  width: 100%;
+}
+
+#ffs-dialog-typo a {
+  font-weight: normal;
+}
+
+#data_stats {
+  z-index:5;
+  display:block;
+  position:absolute;
+  bottom:0;
+  right:0;
+  width:auto;
+  text-align:right;
+  padding: 0.1em 0.7em;
+  font-size: 12px;
+  line-height: 1.5;
+  background-color:#eee;
+  opacity: 0.8;
+}
+.stats {
+  font-size: 12px;
+  border-radius: 0;
+  white-space: nowrap;
+}
+.stats.ui-tooltip {
+  max-width: none;
+}
+
+.leaflet-dummy-none-marker {
+  display: none;
+}
+.leaflet-popup-tip-container {
+  opacity: 0.8;
+}
+
+
+/* DATA TABLE */
+
+
+#table {
+  background-color:white;
+  width:100%;
+  height:100%;
+  position:absolute;
+  top:0;
+  z-index:-1001;
 }
 
 td {

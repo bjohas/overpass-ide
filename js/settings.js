@@ -60,34 +60,36 @@ var Settings = function(namespace,version) {
 };
 // examples
 examples = {
-  "Drinking Water":{"overpass":"<!--\nThis is an example Overpass query.\nTry it out by pressing the Run button above!\nYou can find more examples with the Load tool.\n-->\n<query type=\"node\">\n  <has-kv k=\"amenity\" v=\"drinking_water\"/>\n  <bbox-query/><!--this is auto-completed with the\n                   current map view coordinates.-->\n</query>\n<print/>"},
-  "Drinking Water (Overpass QL)":{"overpass":"/*\nThis is the drinking water example in OverpassQL.\n*/\n(\n  node\n    [\"amenity\"=\"drinking_water\"]\n    (bbox) /* this is auto-completed with the\n              current map view coordinates. */\n);\nout;"},
-  "Cycle Network":{"overpass":"<!--\nThis shows the whole cycleway and cycleroute network.\n-->\n<osm-script output=\"json\">\n  <!-- get cycle route relations -->\n  <query type=\"relation\" into=\"cr\">\n    <bbox-query/>\n    <has-kv k=\"route\" v=\"bicycle\"/>\n  </query>\n  <!-- get cycleways (tagging scheme 1) -->\n  <query type=\"way\" into=\"cw1\">\n    <bbox-query/>\n    <has-kv k=\"highway\" v=\"cycleway\"/>\n  </query>\n  <!-- get cycleways (tagging scheme 2) -->\n  <query type=\"way\" into=\"cw2\">\n    <bbox-query/>\n    <has-kv k=\"highway\" v=\"path\"/>\n    <has-kv k=\"bicycle\" v=\"designated\"/>\n  </query>\n  <!-- combine all found cycleways -->\n  <union into=\"cw\">\n    <item set=\"cw1\"/>\n    <item set=\"cw2\"/>\n  </union>\n  <!-- combine with the cycle routes and use recurse to get to underlying geometry (ways and nodes): -->\n  <union>\n    <item set=\"cr\"/>\n    <recurse from=\"cr\" type=\"down\"/>\n    <item set=\"cw\"/>\n    <recurse from=\"cw\" type=\"down\"/>\n  </union>\n  <!-- show the result -->\n  <print mode=\"body\" order=\"quadtile\"/>\n</osm-script>"},
-  "List Areas":{"overpass":"<!--\nThis lists all areas which include the map center point.\n-->\n<osm-script output=\"json\">\n  <coord-query/><!--this this is auto-completed with the\n                    current map center coordinates.-->\n  <print/>\n</osm-script>"},
-  "Mountains in Area":{"overpass":"<!--\nThis shows all mountains (peaks) in the Dolomites.\nYou may want to use the \"zoom onto data\" button. =>\n-->\n<osm-script output=\"json\">\n  <!-- search the area of the Dolmites -->\n  <query type=\"area\">\n    <has-kv k=\"place\" v=\"region\"/>\n    <has-kv k=\"region:type\" v=\"mountain_area\"/>\n    <has-kv k=\"name:en\" v=\"Dolomites\"/>\n  </query>\n  <print mode=\"body\" order=\"quadtile\"/>\n  <!-- get all peaks in the area -->\n  <query type=\"node\">\n    <area-query/>\n    <has-kv k=\"natural\" v=\"peak\"/>\n  </query>\n  <print mode=\"body\" order=\"quadtile\"/>\n  <!-- additionally, show the outline of the area -->\n  <query type=\"relation\">\n    <has-kv k=\"place\" v=\"region\"/>\n    <has-kv k=\"region:type\" v=\"mountain_area\"/>\n    <has-kv k=\"name:en\" v=\"Dolomites\"/>\n  </query>\n  <print mode=\"body\" order=\"quadtile\"/>\n  <recurse type=\"down\"/>\n  <print mode=\"skeleton\" order=\"quadtile\"/>\n</osm-script>"},
-  "Map Call":{"overpass":"<!--\nThis is a simple map call.\nIt returns all data in the bounding box.\n-->\n<osm-script output=\"xml\">\n  <union into=\"_\">\n    <bbox-query/>\n    <recurse type=\"up\"/>\n  </union>\n  <print mode=\"meta\" order=\"quadtile\"/>\n</osm-script>"},
+  "Drinking Water":{"overpass":"/*\nThis is an example Overpass query.\nTry it out by pressing the Run button above!\nYou can find more examples with the Load tool.\n*/\nnode\n  [amenity=drinking_water]\n  ({{bbox}});\nout;"},
+  "Cycle Network":{"overpass":"/*\nThis shows the cycleway and cycleroute network.\n*/\n\n[out:json];\n\n(\n  // get cycle route relatoins\n  relation[route=bicycle]({{bbox}})->.cr;\n  // get cycleways\n  way[highway=cycleway]({{bbox}});\n  way[highway=path][bicycle=designated]({{bbox}});\n);\n\nout body;\n>;\nout skel qt;"},
+  "Where am I?":{"overpass":"/*\nThis lists all areas which include the map center point.\n*/\n[out:json];\nis_in({{center}});\nout;"},
+  "Mountains in Area":{"overpass":"/*\nThis shows all mountains (peaks) in the Dolomites.\nYou may want to use the \"zoom onto data\" button. =>\n*/\n\n[out:json];\n\n// search the area of the Dolmites\narea\n  [place=region]\n  [\"region:type\"=\"mountain_area\"]\n  [\"name:en\"=\"Dolomites\"];\nout body;\n\n// get all peaks in the area\nnode\n  [natural=peak]\n  (area);\nout body qt;\n\n// additionally, show the outline of the area\nrelation\n  [place=region]\n  [\"region:type\"=\"mountain_area\"]\n  [\"name:en\"=\"Dolomites\"];\nout body;\n>;\nout skel qt;"},
+  "Map Call":{"overpass":"/*\nThis is a simple map call.\nIt returns all data in the bounding box.\n*/\n[out:xml];\n(\n  node({{bbox}});\n  <;\n);\nout meta;"},
+  "MapCSS styling": {"overpass": "/*\nThis example shows how the data can be styled.\nHere, some common amenities are displayed in \ndifferent colors.\n\nRead more: http://wiki.openstreetmap.org/wiki/Overpass_turbo/MapCSS\n*/\n[out:json];\n\n(\n  node[amenity]({{bbox}});\n  way[amenity]({{bbox}});\n  relation[amenity]({{bbox}});\n);\nout body;\n>;\nout skel qt;\n\n{{style: /* this is the MapCSS stylesheet */\nnode, area\n{ color:gray; fill-color:gray; }\n\nnode[amenity=drinking_water],\nnode[amenity=fountain]\n{ color:blue; fill-color:blue; }\n\nnode[amenity=place_of_worship],\narea[amenity=place_of_worship]\n{ color:grey; fill-color:grey; }\n\nnode[amenity=~/(restaurant|hotel|cafe)/],\narea[amenity=~/(restaurant|hotel|cafe)/]\n{ color:red; fill-color:red; }\n\nnode[amenity=parking],\narea[amenity=parking]\n{ color:yellow; fill-color:yellow; }\n\nnode[amenity=bench]\n{ color:brown; fill-color:brown; }\n\nnode[amenity=~/(kindergarten|school|university)/],\narea[amenity=~/(kindergarten|school|university)/]\n{ color:green; fill-color:green; }\n}}"},
 };
 examples_initial_example = "Drinking Water";
 
 // global settings object
-var settings = new Settings("overpass-ide",27);
+var settings = new Settings(
+  configs.appname !== "overpass-turbo" ? configs.appname : "overpass-ide", // todo: use appname consistently
+  32 // settings version number
+);
 
 // map coordinates
-settings.define_setting("use_html5_coords","Boolean",true,1);
-settings.define_setting("coords_lat","Float",41.890,1);
-settings.define_setting("coords_lon","Float",12.492,1);
-settings.define_setting("coords_zoom","Integer",16,1);
+settings.define_setting("coords_lat","Float",configs.defaultMapView.lat,1);
+settings.define_setting("coords_lon","Float",configs.defaultMapView.lon,1);
+settings.define_setting("coords_zoom","Integer",configs.defaultMapView.zoom,1);
 // saves
 settings.define_setting("code","Object",examples[examples_initial_example],1);
 settings.define_setting("saves","Object",examples,1);
 // api server
-settings.define_setting("server","String","http://overpass-api.de/api/",1);
+settings.define_setting("server","String",configs.defaultServer,1);
 // sharing options
 settings.define_setting("share_compression","String","auto",1);
 settings.define_setting("share_include_pos","Boolean",false,1);
 // code editor & map view
 settings.define_setting("use_rich_editor","Boolean",true,1);
-settings.define_setting("tile_server","String","http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",1);
+settings.define_setting("tile_server","String",configs.defaultTiles,1);
 settings.define_setting("enable_crosshairs","Boolean",false,1);
 // export settings
 settings.define_setting("export_image_scale","Boolean",true,1);
@@ -122,11 +124,6 @@ settings.define_upgrade_callback(12, function(s) {
   for (var ex in s.saves) {
     s.saves[ex] = migrate(s.saves[ex]);
   }
-  s.save();
-});
-settings.define_upgrade_callback(14, function(s) {
-  // disable "start at current location" by default
-  s.use_html5_coords = false;
   s.save();
 });
 settings.define_upgrade_callback(18, function(s) {
@@ -198,12 +195,108 @@ settings.define_upgrade_callback(25, function(s) {
 });
 settings.define_upgrade_callback(27, function(s) {
   // rename "List Areas" to "Where am I?"
-  s.saves["Where am I?"] = s.saves["List Areas"];
-  delete s.saves["List Areas"];
+  if (!s.saves["Where am I?"]) {
+    s.saves["Where am I?"] = s.saves["List Areas"];
+    delete s.saves["List Areas"];
+  }
   // add mapcss example
   s.saves["MapCSS styling"] = {
     type: "example",
-    overpass: "<!--\nThis example shows how the data can be styled.\nHere, some common amenities are displayed in \ndifferent colors.\n\nRead more: http://wiki.openstreetmap.org/wiki/Overpass_turbo/MapCSS\n-->\n<osm-script output=\"json\">\n  <query type=\"node\">\n    <has-kv k=\"amenity\"/>\n    <bbox-query {{bbox}}/>\n  </query>\n  <print mode=\"body\"/>\n  <query type=\"way\">\n    <has-kv k=\"amenity\"/>\n    <bbox-query {{bbox}}/>\n  </query>\n  <print mode=\"body\"/>\n  <recurse type=\"down\"/>\n  <print mode=\"skeleton\"/>\n</osm-script>\n\n{{style: /* this is the MapCSS stylesheet */\nnode, area\n{ color:gray; fill-color:gray; }\n\nnode[amenity=drinking_water],\nnode[amenity=fountain]\n{ color:blue; fill-color:blue; }\n\nnode[amenity=place_of_worship],\narea[amenity=place_of_worship]\n{ color:grey; fill-color:grey; }\n\nnode[amenity=~/(restaurant|hotel|cafe)/],\narea[amenity=~/(restaurant|hotel|cafe)/]\n{ color:red; fill-color:red; }\n\nnode[amenity=parking],\narea[amenity=parking]\n{ color:yellow; fill-color:yellow; }\n\nnode[amenity=bench]\n{ color:brown; fill-color:brown; }\n\nnode[amenity=~/(kindergarten|school|university)/],\narea[amenity=~/(kindergarten|school|university)/]\n{ color:green; fill-color:green; }\n}}"
+    overpass: examples["MapCSS styling"]
   };
+  s.save();
+});
+settings.define_upgrade_callback(28, function(s) {
+  // generalize URLs to not explicitly use http protocol
+  s.server = s.server.replace(/^http:\/\//,"//");
+  s.tile_server = s.tile_server.replace(/^http:\/\//,"//");
+  s.save();
+});
+settings.define_upgrade_callback(29, function(s) {
+  // convert templates to wizard-syntax
+  _.each(s.saves, function(save, name) {
+    if (save.type !== "template") return;
+    switch (name) {
+      case "key":
+        save.wizard = "{{key}}=*";
+      break;
+      case "key-type":
+        save.wizard = "{{key}}=* and type:{{type}}";
+      break;
+      case "key-value":
+        save.wizard = "{{key}}={{value}}";
+      break;
+      case "key-value-type":
+        save.wizard = "{{key}}={{value}} and type:{{type}}";
+      break;
+      case "type-id":
+        save.wizard = "type:{{type}} and id:{{id}} global";
+      break;
+      default:
+        return;
+    }
+    delete save.overpass;
+  });
+  s.save();
+});
+
+settings.define_upgrade_callback(30, function(s) {
+  // add comments for templates
+  var chooseAndRun = "\nChoose your region and hit the Run button above!";
+  _.each(s.saves, function(save, name) {
+    if (save.type !== "template") return;
+    switch (name) {
+      case "key":
+        save.comment = "This query looks for nodes, ways and relations \nwith the given key.";
+        save.comment += chooseAndRun;
+      break;
+      case "key-type":
+        save.comment = "This query looks for nodes, ways or relations \nwith the given key.";
+        save.comment += chooseAndRun;
+      break;
+      case "key-value":
+        save.comment = "This query looks for nodes, ways and relations \nwith the given key/value combination.";
+        save.comment += chooseAndRun;
+      break;
+      case "key-value-type":
+        save.comment = "This query looks for nodes, ways or relations \nwith the given key/value combination.";
+        save.comment += chooseAndRun;
+      break;
+      case "type-id":
+        save.comment = "This query looks for a node, way or relation \nwith the given id.";
+        save.comment += "\nTo execute, hit the Run button above!";
+      break;
+      default:
+        return;
+    }
+    delete save.overpass;
+  });
+  s.save();
+});
+
+settings.define_upgrade_callback(31, function(s) {
+  // rewrite examples in OverpassQL
+  _.each(s.saves, function(save, name) {
+    if (save.type !== "example") return;
+    switch (name) {
+      case "Drinking Water":
+      case "Cycle Network":
+      case "Mountains in Area":
+      case "Map Call":
+      case "Where am I?":
+      case "MapCSS styling":
+        save.overpass = examples[name].overpass;
+      break;
+      default:
+        return;
+    }
+  });
+  delete s.saves["Drinking Water (Overpass QL)"];
+  s.save();
+});
+
+settings.define_upgrade_callback(32, function(s) {
+  // fix typo in query definition
+  s.saves["MapCSS styling"].overpass = s.saves["MapCSS styling"].overpass.replace("<;",">;");
   s.save();
 });
