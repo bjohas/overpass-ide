@@ -98,6 +98,7 @@ $(document).ready(function() {
   var wikipediaquery = "";
   var wikipedialanguage = "de";
   var get = location.search.substring(1).split("&");
+	// Note that fetching the WQ,QL GET parameters was my first attempt - just working with map.js rather than with the IDE. Because of the introductin of {{mwapi: }} in the ide, this is now obsolete. Instead, it should use the {{mwapi:}} tag (in the same way as map.html uses the {{style:}} tag.
   for (var i=0; i<get.length; i++) {
     var kv = get[i].split("=");
     if (kv[0] == "Q") // uncompressed query set in url
