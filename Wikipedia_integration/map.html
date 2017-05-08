@@ -1,0 +1,65 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" lang="en"></meta>
+  <meta name="viewport" content="width=device-width" />
+  <link rel="icon" href="turbo.png" type="image/png" />
+  <title>overpass turbo - map</title>
+  <!--jQuery-->
+  <script src="//code.jquery.com/jquery-1.11.1.js"></script>
+  <!--lodash-->
+  <script src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.js"></script>
+  <!--leaflet-->
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css" />
+  <script src="//cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js"></script>
+  <!--leaflet extensions-->
+  <script src="js/GeoJsonNoVanish.js"></script>
+  <script src="js/OSM4Leaflet.js"></script>
+  <script src="libs/mapbbcode/PopupIcon.js"></script>
+  <!--jsmapcss-->
+  <script src="js/jsmapcss/styleparser.js"></script>
+  <script src="js/jsmapcss/Condition.js"></script>
+  <script src="js/jsmapcss/Rule.js"></script>
+  <script src="js/jsmapcss/RuleChain.js"></script>
+  <script src="js/jsmapcss/Style.js"></script>
+  <script src="js/jsmapcss/StyleChooser.js"></script>
+  <script src="js/jsmapcss/StyleList.js"></script>
+  <script src="js/jsmapcss/RuleSet.js"></script>
+  <!--osmtogeojson-->
+  <script src="libs/osmtogeojson/osmtogeojson.js"></script>
+  <!--own scripts and styles-->
+  <script src="js/query.js"></script>
+  <script src="js/configs.js"></script>
+  <script src="js/overpass.js"></script>
+  <!-- wikipedia -->
+  <script src="extra/jsonp.js"></script>
+  <script src="extra/leaflet-wikipedia.js"></script>
+  <link rel="stylesheet" href="extra/Leaflet.EditInOSM.css" />
+  <script src="extra/Leaflet.EditInOSM.js"></script>
+  <!-- run map -->
+  <link rel="stylesheet" href="css/map.css" />
+  <script src="js/map2.js"></script>
+</head>
+<body>
+  <div style="position: absolute;
+    left: 40px;
+    top: 8px;
+    z-index: 1000;
+    background: white; border: solid 1px blue; padding: 10px;
+" id="messages">
+<span style="margin-bottom: 0px;" >WP Search: 
+    <input type="button" id="wikiSearch_DATA" value="data" />
+    <input type="button" id="wikiSearch_EN" value="en" />
+    <input type="button" id="wikiSearch_DE" value="de" />
+    <input type="button" id="wikiSearch_CA" value="ca" />
+    <input type="button" id="wikiSearch_ES" value="es" />
+</span>
+<br/>
+    Language: <span id="language">en</span>, elements: <span id="elements">N/A</span> in <span id="radius">N/A</span>m, <a href="" id="apiquery">API link</a>
+  </div>
+  <!--map-->
+  <div id="map"></div>
+  <!--wait spinner-->
+  <div class="modal"></div>
+</body>
+</html>

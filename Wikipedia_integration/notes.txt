@@ -1,0 +1,18 @@
+
+NOTE: CURRENTLY THIS CODE DOESN'T DO ANYTHING FOR OVERPASS-TURBO! I developed this for a slightly older version, and it needs to be integrated in order to wokr again.
+
+Things that needs to be fixed:
+
+Wikipedia data processing
+- The search radius should be removed from the messages if the search is by category
+- For 'secondary' coordinates, additional markers should be placed.
+- Retrieve wikipage categories as well, and display them on the popup.
+
+Display:
+- Somehow the layers should be adjusted so that overlapping icons are more clickable.
+- Two wikipedia points that are close together look like one
+
+When querying wikidata, it looks like the api cannot produce wikipedia page links. However, 
+
+Note: It may be helpful to use out geom, out bb to show relations.
+
