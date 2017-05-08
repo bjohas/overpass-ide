@@ -1,3 +1,7 @@
+NOTE: This is a non-functioning version of overpass turbo, that aims to have wikipedia integration, see http://bjohas.de/wiki/Maps/Linking_wikipedia_to_OSM/Overpass_with_Mediawiki_API for details.
+
+
+
 overpass turbo
 ==============
 
